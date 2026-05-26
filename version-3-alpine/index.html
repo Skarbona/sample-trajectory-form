@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trajectory Form — Alpine.js</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'media' };
+  </script>
+  <style>[x-cloak] { display: none !important; }</style>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+</head>
+<body class="min-h-screen bg-zinc-100 p-6 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
+  <div
+    class="mx-auto max-w-xl rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900"
+    x-data="{
+      activeOption: 'one',
+      allIssues: `(high) description of biggest error in trajectory\n(medium) another meaningful error....etc\n(medium) description of another error...`,
+      trajectoryOne: 3,
+      trajectoryTwo: 3,
+      issues: [{ id: 1, text: '', severity: 'Low' }],
+      nextId: 2,
+      severityOptions: ['Low', 'Medium', 'Hard'],
+      addIssue() {
+        this.issues.push({ id: this.nextId, text: '', severity: 'Low' });
+        this.nextId += 1;
+      }
+    }"
+  >
+    <nav class="mb-6 flex gap-2 border-b border-zinc-200 pb-4 dark:border-zinc-700" role="tablist" aria-label="Form options">
+      <button
+        type="button"
+        class="flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors"
+        :class="activeOption === 'one'
+          ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+          : 'text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800'"
+        role="tab"
+        :aria-selected="activeOption === 'one'"
+        @click="activeOption = 'one'"
+      >
+        Option One
+      </button>
+      <button
+        type="button"
+        class="flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors"
+        :class="activeOption === 'two'
+          ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+          : 'text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800'"
+        role="tab"
+        :aria-selected="activeOption === 'two'"
+        @click="activeOption = 'two'"
+      >
+        Option Two
+      </button>
+    </nav>
+
+    <section class="flex flex-col gap-5" role="tabpanel" x-show="activeOption === 'one'">
+      <label class="flex flex-col gap-2">
+        <span class="text-sm font-bold">All Issues</span>
+        <textarea
+          class="w-full resize-y rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-950 dark:focus:ring-blue-400"
+          rows="12"
+          x-model="allIssues"
+        ></textarea>
+      </label>
+
+      <label class="flex flex-col gap-2">
+        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Trajectory Quality</span>
+        <div class="flex items-center gap-4">
+          <input type="range" class="h-2 flex-1 cursor-pointer accent-blue-600" min="1" max="5" step="1" x-model.number="trajectoryOne" />
+          <output class="w-8 text-center text-sm font-semibold tabular-nums" x-text="trajectoryOne"></output>
+        </div>
+      </label>
+    </section>
+
+    <section class="flex flex-col gap-5" role="tabpanel" x-show="activeOption === 'two'" x-cloak>
+      <label class="flex flex-col gap-2">
+        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Trajectory Quality</span>
+        <div class="flex items-center gap-4">
+          <input type="range" class="h-2 flex-1 cursor-pointer accent-blue-600" min="1" max="5" step="1" x-model.number="trajectoryTwo" />
+          <output class="w-8 text-center text-sm font-semibold tabular-nums" x-text="trajectoryTwo"></output>
+        </div>
+      </label>
+
+      <div class="flex flex-col gap-4">
+        <template x-for="(issue, index) in issues" :key="issue.id">
+          <article class="flex flex-col gap-4 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-950">
+            <label class="flex flex-col gap-2">
+              <span class="text-sm font-bold" x-text="'Issue ' + (index + 1)"></span>
+              <textarea
+                class="w-full resize-y rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-950 dark:focus:ring-blue-400"
+                rows="4"
+                placeholder="Describe the issue…"
+                x-model="issue.text"
+              ></textarea>
+            </label>
+
+            <label class="flex flex-col gap-2">
+              <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Severity</span>
+              <select
+                class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-950 dark:focus:ring-blue-400"
+                x-model="issue.severity"
+              >
+                <template x-for="opt in severityOptions" :key="opt">
+                  <option :value="opt" x-text="opt"></option>
+                </template>
+              </select>
+            </label>
+          </article>
+        </template>
+      </div>
+
+      <button
+        type="button"
+        class="w-full rounded-lg border-2 border-dashed border-zinc-300 px-4 py-3 text-sm transition-colors hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800"
+        @click="addIssue()"
+      >
+        <strong>Add new Issue</strong>
+      </button>
+    </section>
+  </div>
+</body>
+</html>
