@@ -39,7 +39,7 @@ function IssueCard({ index, issue, onChange }) {
           rows={4}
           placeholder="Describe the issue…"
           value={issue.text}
-          onChange={(e) => onChange({ ...issue, text: e.target.value })}
+          onChange={(e) onChange({ ...issue, text: e.target.value })}
         />
       </label>
 
